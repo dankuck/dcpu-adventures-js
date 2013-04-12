@@ -63,7 +63,7 @@ var fuel = 1000;            // units of fuel
 
 // TEST STUFF
 //fuel = 0;
-fuel = 100;
+//fuel = 100;
 //x = 62450;
 //x = 65500;
 
