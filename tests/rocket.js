@@ -14,8 +14,8 @@ var explode_img = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBh
 
 // GAME AREAS
 var safe_zone = 100;
-var target_distance = 65535;
-var magnet_size = 3000;
+var target_distance = 5535;
+var magnet_size = 300;
 var total_distance = target_distance + magnet_size;
 
 // FORMULAS
@@ -56,7 +56,7 @@ rocket.src = sprites.right.no_thrust;
 
 // GAME STATE
 var speed = 0;              // units per second
-var x = 0x1000;             // rocket's position
+var x = 0x100;              // rocket's position
 var facing = sprites.right; // face the direction of acceleration
 var start = null;           // the clock starts when acceleration begins
 var fuel = 1000;            // units of fuel
