@@ -1,0 +1,147 @@
+<html>
+	<head>
+		<title>Test DCPU-16.js stuff</title>
+	</head>
+	<body>
+
+		<script type="text/javascript" src="../lib/cpu.js"></script>
+		<script type="text/javascript" src="../lib/assembler.js"></script>
+		<script type="text/javascript" src="./nice_hex.js"></script>
+		<script type="text/javascript" src="./register_watcher.js"></script>
+		<script type="text/javascript" src="./memory_watcher.js"></script>
+		<script type="text/javascript" src="./timeouts.js"></script>
+		<script type="text/javascript" src="./create_dom_tree.js"></script>
+
+		<div>
+			<div style="float: right; width: 50%">
+				<h3>The Fun</h3>
+				<div id="the_fun" style="width: 95%; height: 20em; border: 1px solid black;"></div>
+			</div>
+			<h3>JS Code</h3>
+			<textarea id="js_code" style="width: 45%; height: 20em;"></textarea>
+			<div>
+				<button id="run_button">RUN</button>
+				<button id="stop_button">STOP</button>
+			</div>
+		</div>
+
+		<div style="clear: both">
+			<div style="float: right; width: 25%">
+				<h3>Memory</h3>
+				<div id="memory" style="font-family: courier;">
+				&nbsp;
+				</div>
+			</div>
+			<div style="float: right; width: 25%">
+				<h3>Registers</h3>
+				<br />
+				<div id="registers">
+				&nbsp;
+				</div>
+			</div>
+
+			<h3>DCPU-16 Code</h3>
+			<textarea id="dcpu_code" style="width: 45%; height: 20em;"></textarea>
+			<div>
+				<button id="run_dcpu_button">RUN</button>
+				<button id="stop_dcpu_button">STOP</button>
+				<button id="continue_dcpu_button">CONTINUE</button>
+				<button id="compile_dcpu_button">COMPILE</button>
+				<button id="new_dcpu_button">NEW DCPU-16</button>
+				<img id="led" />
+			</div>
+		</div>
+
+		<script type="text/javascript">
+		(function(){
+			var dcpu = new DCPU16.CPU();
+			var the_fun = document.getElementById('the_fun');
+			var js_code = document.getElementById('js_code');
+			var memory = document.getElementById('memory');
+			var run_button = document.getElementById('run_button');
+			var stop_button = document.getElementById('stop_button');
+			var run_dcpu_button = document.getElementById('run_dcpu_button');
+			var stop_dcpu_button = document.getElementById('stop_dcpu_button');
+			var continue_dcpu_button = document.getElementById('continue_dcpu_button');
+			var compile_dcpu_button = document.getElementById('compile_dcpu_button');
+			var new_dcpu_button = document.getElementById('new_dcpu_button');
+			var led = document.getElementById('led');
+			var registers = document.getElementById('registers');
+			var setInterval = createSetInterval();
+			var clearInterval = setInterval.clearInterval;
+			var setTimeout = createSetTimeout();
+			var clearTimeout = setTimeout.clearTimeout;
+			var stopping = false;
+			var stop = function(cb){
+				if (stopping)
+					return false;
+				if (dcpu.running){
+					dcpu.stop();
+					stopping = true;
+					var tries = 5;
+					var watcher = setInterval(function(){
+						if (! dcpu.running){
+							cb && cb();
+							return [clearInterval(watcher), stopping = false];
+						}
+						if (--tries == 0)
+							return [clearInterval(watcher), stopping = false];
+					}, 100);
+				}
+				else
+					cb && cb();
+			};
+			run_button
+				.addEventListener('click', function(){
+					setTimeout.stop();
+					setInterval.stop();
+					the_fun.innerHTML = '';
+					eval(js_code.value);
+				});
+			stop_button
+				.addEventListener('click', function(){
+					setTimeout.stop();
+					setInterval.stop();
+				});
+			run_dcpu_button
+				.addEventListener('click', function(){
+					stop(function(){
+						dcpu.set('pc', 0);
+						new DCPU16.Assembler(dcpu).compile(document.getElementById('dcpu_code').value);
+						dcpu.run();
+					});
+				});
+			stop_dcpu_button
+				.addEventListener('click', function(){
+					stop();
+				});
+			compile_dcpu_button
+				.addEventListener('click', function(){
+					new DCPU16.Assembler(dcpu).compile(document.getElementById('dcpu_code').value);
+				});
+			continue_dcpu_button
+				.addEventListener('click', function(){
+					dcpu.run();
+				});
+			new_dcpu_button
+				.addEventListener('click', function(){
+					stop(function(){
+						dcpu.mem = new DCPU16.CPU().mem; // same chip, just copy the new state
+					});
+				});
+			registers.appendChild(Adventure.makeRegisterWatcher(dcpu));
+			var memory_watcher = Adventure.makeMemoryWatcher(dcpu);
+			memory.innerHTML = '';
+			memory.appendChild(memory_watcher);
+			setInterval(function(){
+				if (dcpu.running)
+					led.src = 'data:image/gif;base64,R0lGODlhEQARAPIAMf///3P/czn/OQD/AADnAADGAAAAAAAAACH5BAEAAAAALAAAAAARABEAQANNCLrcayPKIQSNxmltSiHTlD1SVQVoMDJG53lt00noZA0jZJsnLkMp1YrTim1cLwLIx/oMaqHVLBSpYBQ6qinABGQpPNTQSwmmxqwiOgEAOw==';
+				else
+					led.src = 'data:image/gif;base64,R0lGODlhEQARAPMAMf////9ze/9ra/9SUv9CQv85Of8YIf8ACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAAAAALAAAAAARABEAQARYEMhJ60Qn60MM+QJijSNSbOghXp4wDIEgxMFKIdhxqraUZ4EAqkBYmQgc4ucFC1VwMVmtZ8FZSQAMMkX9BbmXlIZALBg3SKKB6fQpPwR2+xKQw2pYK84SAQA7';
+			}, 100);
+		})();
+
+		</script>
+
+	</body>
+</html>
