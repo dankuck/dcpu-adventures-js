@@ -63,7 +63,6 @@ SET [0x1000], 100
 SET PC, loop
 
 :dlt2500
-SET A, 0x1337
 IFA [0x1001], 11
 SET PC, dlt2500sgt10
 IFU [0x1001], 1

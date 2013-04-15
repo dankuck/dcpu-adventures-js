@@ -59,7 +59,7 @@ var speed = 0;              // units per second
 var x = 0x100;              // rocket's position
 var facing = sprites.right; // face the direction of acceleration
 var start = null;           // the clock starts when acceleration begins
-var fuel = 1000;            // units of fuel
+var fuel = 5000;            // units of fuel
 
 // TEST STUFF
 //fuel = 0;
