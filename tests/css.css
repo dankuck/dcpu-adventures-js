@@ -1,0 +1,23 @@
+
+.memory_watcher .address_label{
+	background-color: #DDD;
+	color: black;
+}
+
+.memory_watcher .focus_address{
+	background-color: yellow;
+}
+
+.memory_watcher .pc{
+	border: 1px solid red;
+}
+
+.memory_watcher .sp{
+	border: 1px solid blue;
+}
+
+.memory_watcher .word{
+	color: black;
+	text-decoration: none;
+}
+
